@@ -4,40 +4,39 @@ const file = './output-json.json';
 let xmlInput;
 let xmlType;
 
+// cleans the XML (takes out extra spaces, indents, etc.)
 function cleanXml(xml) {
-    // remove <?xml version='1.0' encoding='UTF-8'?>, ?> ,'\r', '\n, and space'
-    // const extraTags = ['<?xml', '<xml', '?>', '</xml>'];
     const xmlString = xml.replace(/\r?\n|\r| /g, "");
-    const tagSearch = xmlString.match(/<\?.*\?>/g);
-    let cleanXml = xmlString.split(tagSearch).splice(1, 1).join('');
 
-    return cleanXml;
+    if (typeof xmlString === "Object") {
+        const tagSearch = xmlString.match(/<\?.*\?>/g);
+        const cleanXml = xmlString.split(tagSearch).splice(1, 1).join('');
+        return cleanXml;
+    } else {
+        return xmlString;
+    }
 }
 
+// turns the XML into an array of strings (based on same tags)
 function xmlArrayCreater(xml) {
     const tagSearch = xml.match(/<\w*\>/g);
-    // console.log("tagSearch: ", tagSearch);
     const objectName = tagSearch[0];
-    // console.log("objectName: ", objectName);
     const objectNameCount = (xml.match(new RegExp(objectName, 'gi')));
     if (objectNameCount.length > 1) {
         xmlType = 'Array';
 
         let objectSplit = xml.split(objectName);
-        // console.log("objectSplit: ", objectSplit);
-
         objectSplit.splice(0, 1);
 
         for (var m = 0; m < objectSplit.length; m++) {
             objectSplit[m] = objectName + objectSplit[m];
         }
-
-        // console.log("objectSplit 2: ", objectSplit);
-
         return objectSplit;
-
     } else if (objectNameCount.length < 2) {
         xmlType = 'String';
+        let stringToArray = [];
+        stringToArray.push(xml);
+        return stringToArray;
     } else {
         xmlType = 'Unknown';
         console.log('error');
@@ -45,6 +44,7 @@ function xmlArrayCreater(xml) {
     }
 }
 
+// cuts off the angled brackets in the tags
 function tagCutter(tagString) {
     if (!tagString) {
         return;
@@ -59,6 +59,7 @@ function tagCutter(tagString) {
     }
 }
 
+// main function
 function parseXml(xml) {
     if (!xml) {
         console.log(err);
@@ -69,7 +70,6 @@ function parseXml(xml) {
         for (var i = 0; i < xml.length; i++) {
             // finds all properties within the tags
             let propertySearch = xml[i].match(/>\w*\<\//g);
-            // console.log('propertySearch: ', propertySearch);
 
             // finds all XML tags by '<' and '>'
             let tagSearch = xml[i].match(/<\w*\>/g);
@@ -123,7 +123,6 @@ function parseXml(xml) {
         }
 
         console.log('finalResult: ', finalResult);
-        // console.log('finalResultString: ', finalResultString);
 
         fs.writeFile(file, finalResultString, (err) => {
             if (err) throw err;
@@ -132,15 +131,15 @@ function parseXml(xml) {
     }
 }
 
-fs.readFile('./input-xml-messy.xml', 'utf8', (err, xmlData) => {
+// input-xml-singular
+// input-xml-messy
+fs.readFile('./input-xml-singular.xml', 'utf8', (err, xmlData) => {
     if (err) {
       return console.log(err);
     } else {
         xmlInput = xmlData;
         const cleanString = cleanXml(xmlInput);
-        // const arrayString = isXmlArray(cleanString);
-        let arrayString = xmlArrayCreater(cleanString);
-        // console.log(arrayString);
+        const arrayString = xmlArrayCreater(cleanString);
         parseXml(arrayString);
     }
 });
