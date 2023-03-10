@@ -1,0 +1,6 @@
+-find out if the input is an array?
+-take into account for multiple different type of XML objects (find a way to separate it by the object opening and closing tags)
+-make array of like objects
+-add handling of <xml> or other opening tags like <container> ?
+-accept input and output file names from user
+-make a class that allows you to call the functions and input/ouput as you want

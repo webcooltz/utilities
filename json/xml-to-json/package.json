@@ -1,0 +1,14 @@
+{
+  "name": "xml-to-json",
+  "version": "1.0.0",
+  "description": "take xml and turn it to json",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "webcooltz",
+  "license": "ISC",
+  "dependencies": {
+  }
+}

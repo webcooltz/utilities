@@ -38,7 +38,7 @@ fs.readFile('./raw-data/last-names.txt', 'utf8', (err, lastNamesData) => {
             let random2 = getRandomInt(0, lastNames.length);
             let lastName = lastNames[random2];
 
-            // gets a random email
+            // gets a random email ending
             let random3 = getRandomInt(0, domainEnds.length);
 
             let user = {
