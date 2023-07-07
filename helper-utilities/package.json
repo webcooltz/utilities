@@ -1,0 +1,17 @@
+{
+  "name": "helper-utilities",
+  "version": "1.0.2",
+  "description": "helper files like logging data, scraping, etc.",
+  "main": "dataCleaner.js",
+  "keywords": [
+    "small data cleaning",
+    "log file"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "node dataCleaner.js",
+    "log": "node logData.js"
+  },
+  "author": "webcooltz",
+  "license": "ISC"
+}
