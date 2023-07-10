@@ -10,17 +10,16 @@ const csvFilePath = "./csv-to-json/results/imdbData.csv";
 const jsonFilePath = "./csv-to-json/results/imdbData.json";
 // ---Helpers---
 const { cleanupData } = require("../../helper-utilities/dataCleaner");
-
-const filterEmptyCells = (row) => {
-  const filteredRow = row.filter((cell) => cell !== ""); // Filter out empty cells
-  return filteredRow;
-};
+// const { writeOutputData } = require("../../helper-utilities/writeOutputData");
+const { writeToLogfile } = require("../../helper-utilities/logger");
+// --- Variables---
+let isTvEpisodes = false;
 
 const convertCsvToJson = () => {
   // ---Read the CSV file---
   fs.readFile(csvFilePath, "utf-8", (err, fileContent) => {
     if (err) {
-      console.log(err);
+      writeToLogfile("Error", `Error reading CSV file:\n-${err}`);
       throw new Error(err);
     }
     const jsonArray = [];
@@ -30,14 +29,14 @@ const convertCsvToJson = () => {
     fileContent = fileContent.replace(/"/g, "");
     fileContent = fileContent.replace(/\r/g, "");
     let episodeCount = 0;
-    if (fileContent.includes("Ep")) { // If the file contains "Ep" (e.g. S1, Ep1) -- if it's a tv show
+    // If the file contains "Ep" -- (if it's a tv show)
+    if (fileContent.includes("Episodes")) {
       fileContent = fileContent.replace(/S(\d+),\s*Ep(\d+)/gi, (match, season, episode) => {
-        episodeCount++; // Increment the count for each replacement
+        episodeCount++;
         return `S${season}-Ep${episode}`;
       });
-      console.log("episodeCount: ", episodeCount);
+      isTvEpisodes = true;
     }
-    // console.log("fileContent: ", fileContent);
 
     // ---Get data---
     // -Split the CSV file into an array of strings
@@ -45,49 +44,68 @@ const convertCsvToJson = () => {
     const lines = fileContent.split("\n");
     let headers = lines.shift().split(",");
     headers = headers.splice(2, headers.length - 1);
-    // console.log("headers: ", headers);
+
+    console.log("headers: ", headers);
 
     // ---Create objects---
     // -Create an object for each line
     lines.forEach((line) => {
       const obj = {};
+      // if the comma is between quotes, don't split
       const currentline = line.split(",");
       console.log("currentline: ", currentline);
-      // get first column, split it by a -, then get second part
-      const scrapeOrder = currentline[0].split("-")[1].trim();
-      console.log("scrapeOrder: ", scrapeOrder);
-      // obj["scrapeOrder"] = scrapeOrder;
-      // get scrape order, divide it by episodeCount
-      const scrapeOrderDivided = Math.ceil(scrapeOrder / episodeCount);
-      console.log("scrapeOrderDivided: ", scrapeOrderDivided);
-      const scrapeFinder = 21 - (scrapeOrder - (scrapeOrderDivided * (episodeCount))) * -1;
-      console.log("scrapeFinder: ", scrapeFinder);
+
+      // if it's a show title or other
+      if (!isTvEpisodes) {
+          // if the description has a comma
+          const lastElementIndex = currentline.length-1;
+          const lastElement = currentline[currentline.length-1];
+          const secondToLastElement = currentline[currentline.length-2];
+        if (currentline.length - 3 === headers.length) {
+          // combine last two elements
+          currentline[currentline.length-2] = `${secondToLastElement},${lastElement}`;
+          // remove last element
+          currentline.splice(lastElementIndex, 1);
+        }
+      }
+
+      // if tv show only
+      let scrapeOrder;
+      let scrapeOrderDivided;
+      let scrapeFinder;
+      if (isTvEpisodes) {
+        scrapeOrder = currentline[0].split("-")[1].trim();
+        scrapeOrderDivided = Math.ceil(scrapeOrder / episodeCount);
+        // finds the index of the object in the array
+        scrapeFinder = 21 - (scrapeOrder - (scrapeOrderDivided * (episodeCount))) * -1;
+      }
 
       let columnIndex = 0;
       headers.forEach((header) => {
+        // console.log("header: ", header);
         obj[header] = "";
-        console.log("obj: ", obj);
+        // if the cell is not empty
         if (currentline[columnIndex+2] !== "") {
           const cellValue = currentline[columnIndex+2].trim();
           console.log("cellValue: ", cellValue);
           obj[header] = cellValue;
-          console.log("obj[header]: ", obj[header]);
-          if (scrapeOrder > episodeCount) { // wait for initial episodes to be created
-            console.log("jsonArray[scrapeFinder] (before): ", jsonArray[scrapeFinder]);
-            console.log("scrapeFinder: ", scrapeFinder);
-            jsonArray[scrapeFinder][header] = currentline[columnIndex+2];
-            console.log("jsonArray[scrapeFinder]: ", jsonArray[scrapeFinder]);
+          if (isTvEpisodes) {
+            // wait for initial episodes to be created
+            if (scrapeOrder > episodeCount) {
+              jsonArray[scrapeFinder][header] = currentline[columnIndex+2];
+            }
           }
+          // } else {
+          //   if (headers.length-2 < columnIndex)
+          // }
           // split season and episode
           if (header === "episodeNumber") {
             obj["seasonNumber"] = parseInt(cellValue.split("-")[0].trim().replace("S", ""));
             const episode = parseInt(cellValue.split("-")[1].trim().replace("Ep", ""));
-            console.log("episode: ", episode);
             obj[header] = episode;
           }
         }
           columnIndex++;
-          // console.log("columnIndex: ", columnIndex);
       });
       jsonArray.push(obj);
     });
@@ -96,23 +114,29 @@ const convertCsvToJson = () => {
     jsonArray.splice(episodeCount, jsonArray.length - 1);
 
     // put seasonNumber at the beginning of each object
-    jsonArray.forEach((obj, index) => {
-      const { seasonNumber, ...rest } = obj;
-      jsonArray[index] = { seasonNumber, ...rest };
-    });
+    if (isTvEpisodes) {
+      jsonArray.forEach((obj, index) => {
+        const { seasonNumber, ...rest } = obj;
+        jsonArray[index] = { seasonNumber, ...rest };
+      });
+    }
 
-    // console.log("jsonArray: ", jsonArray);
+    let stuffToWrite;
+    // if it's one element, remove the array
+    if (jsonArray.length === 1) {
+      stuffToWrite = jsonArray[0];
+    } else {
+      stuffToWrite = jsonArray;
+    }
 
-    fs.writeFile(jsonFilePath, JSON.stringify(jsonArray, null, 4), (err) => {
+    fs.writeFile(jsonFilePath, JSON.stringify(stuffToWrite, null, 4), (err) => {
       if (err) {
-        console.log(err);
+        writeToLogfile("Error", `Error writing to JSON file:\n-${err}`);
         throw new Error(err);
       }
-      console.log("JSON saved!");
+      writeToLogfile("Success", `JSON successfully written to ${jsonFilePath}`);
     });
   });
 };
 
 convertCsvToJson();
-
-// module.exports = { convertCsvToJson };
