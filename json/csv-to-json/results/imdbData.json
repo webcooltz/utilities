@@ -1,7 +1,114 @@
-{
-    "title": "Malcolm in the Middle",
-    "yearsRan": "2000-2006",
-    "ageRating": "TV-PG",
-    "avgEpisodeLength": "22m",
-    "description": "A gifted young teen tries to survive life with his dimwitted, dysfunctional family."
-}
+[
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 1,
+        "title": "Pilot",
+        "description": "Malcolm has been labeled a boy genius and is moved",
+        "airDate": "9 Jan. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 2,
+        "title": "Red Dress",
+        "description": "When Lois finds her red anniversary dress burnt and in the toilet",
+        "airDate": "16 Jan. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 3,
+        "title": "Home Alone 4",
+        "description": "While Hal and Lois are away for the weekend",
+        "airDate": "23 Jan. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 4,
+        "title": "Shame",
+        "description": "Malcolm finds himself being antagonized by a new bully",
+        "airDate": "6 Feb. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 5,
+        "title": "Malcolm Babysits",
+        "description": "Because of Dewey always leaving food in the crawlspace under the house",
+        "airDate": "13 Feb. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 6,
+        "title": "Sleepover",
+        "description": "Malcolm stays overnight at Stevie's house. He convinces Stevie to sneak out of the house with him and they go to an arcade downtown",
+        "airDate": "20 Feb. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 7,
+        "title": "Francis Escapes",
+        "description": "Francis bails from military school in a desperate attempt to visit his stupid girlfriend.",
+        "airDate": "27 Feb. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 8,
+        "title": "Krelboyne Picnic",
+        "description": "The family have to go to the Krelboyne class picnic. Malcolm doesn't want to go because he has to do an act and doesn't want to look bad in front of his family especially Francis who is home for the weekend. Francis promises to get Malcolm out of doing his act but meets a girl at the picnic and no longer wants to leave. Lois tries to fit in with the other parents unsuccessfully and Hal serves meat from the BBQ even though the Krelboynes all voted that there would be no meat. Reese ends up on the run from eraserheads brother who catches him in the end giving him a ...",
+        "airDate": "12 Mar. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 9,
+        "title": "Lois vs. Evil",
+        "description": "Waiting in Lucky Aide for Lois to end her shift",
+        "airDate": "19 Mar. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 10,
+        "title": "Stock Car Races",
+        "description": "Hal takes the day off and the boys to the stock car races",
+        "airDate": "2 Apr. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 11,
+        "title": "Funeral",
+        "description": "Aunt Helen died and the family prepares for the funeral",
+        "airDate": "9 Apr. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 12,
+        "title": "Cheerleader",
+        "description": "While we have a chance to see the world from Dewey's very special point of view",
+        "airDate": "16 Apr. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 13,
+        "title": "Rollerskates",
+        "description": "Malcolm sucks at street-hockey",
+        "airDate": "30 Apr. 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 14,
+        "title": "The Bots and the Bees",
+        "description": "Lois takes off to visit Francis at the academy",
+        "airDate": "7 May 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 15,
+        "title": "Smunday",
+        "description": "The boys were grounded for a while for losing Dewey's bike and can't wait for their release",
+        "airDate": "14 May 2000"
+    },
+    {
+        "seasonNumber": 1,
+        "episodeNumber": 16,
+        "title": "Water Park",
+        "description": "The family takes a day vacation at the water-park. All except Dewey",
+        "airDate": "21 May 2000"
+    }
+]

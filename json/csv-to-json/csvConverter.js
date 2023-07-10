@@ -12,8 +12,6 @@ const jsonFilePath = "./csv-to-json/results/imdbData.json";
 const { cleanupData } = require("../../helper-utilities/dataCleaner");
 // const { writeOutputData } = require("../../helper-utilities/writeOutputData");
 const { writeToLogfile } = require("../../helper-utilities/logger");
-// --- Variables---
-let isTvEpisodes = false;
 
 const convertCsvToJson = () => {
   // ---Read the CSV file---
@@ -22,15 +20,19 @@ const convertCsvToJson = () => {
       writeToLogfile("Error", `Error reading CSV file:\n-${err}`);
       throw new Error(err);
     }
+    // Variables
     const jsonArray = [];
+    let isTvEpisodes = false;
+    let stuffToWrite
 
     // ---Clean the data---
     fileContent = cleanupData(fileContent);
     fileContent = fileContent.replace(/"/g, "");
     fileContent = fileContent.replace(/\r/g, "");
     let episodeCount = 0;
+
     // If the file contains "Ep" -- (if it's a tv show)
-    if (fileContent.includes("Episodes")) {
+    if (fileContent.includes("episodes")) {
       fileContent = fileContent.replace(/S(\d+),\s*Ep(\d+)/gi, (match, season, episode) => {
         episodeCount++;
         return `S${season}-Ep${episode}`;
@@ -44,8 +46,7 @@ const convertCsvToJson = () => {
     const lines = fileContent.split("\n");
     let headers = lines.shift().split(",");
     headers = headers.splice(2, headers.length - 1);
-
-    console.log("headers: ", headers);
+    // console.log("headers: ", headers);
 
     // ---Create objects---
     // -Create an object for each line
@@ -53,7 +54,7 @@ const convertCsvToJson = () => {
       const obj = {};
       // if the comma is between quotes, don't split
       const currentline = line.split(",");
-      console.log("currentline: ", currentline);
+      // console.log("currentline: ", currentline);
 
       // if it's a show title or other
       if (!isTvEpisodes) {
@@ -75,9 +76,12 @@ const convertCsvToJson = () => {
       let scrapeFinder;
       if (isTvEpisodes) {
         scrapeOrder = currentline[0].split("-")[1].trim();
+        // console.log("scrapeOrder: ", scrapeOrder);
         scrapeOrderDivided = Math.ceil(scrapeOrder / episodeCount);
+        // console.log("scrapeOrderDivided: ", scrapeOrderDivided);
         // finds the index of the object in the array
-        scrapeFinder = 21 - (scrapeOrder - (scrapeOrderDivided * (episodeCount))) * -1;
+        scrapeFinder = (episodeCount-1) - (scrapeOrder - (scrapeOrderDivided * (episodeCount))) * -1;
+        // console.log("scrapeFinder: ", scrapeFinder);
       }
 
       let columnIndex = 0;
@@ -87,17 +91,15 @@ const convertCsvToJson = () => {
         // if the cell is not empty
         if (currentline[columnIndex+2] !== "") {
           const cellValue = currentline[columnIndex+2].trim();
-          console.log("cellValue: ", cellValue);
+          // console.log("cellValue: ", cellValue);
           obj[header] = cellValue;
           if (isTvEpisodes) {
             // wait for initial episodes to be created
             if (scrapeOrder > episodeCount) {
               jsonArray[scrapeFinder][header] = currentline[columnIndex+2];
+              // console.log("jsonArray[scrapeFinder][header]: ", jsonArray[scrapeFinder][header]);
             }
           }
-          // } else {
-          //   if (headers.length-2 < columnIndex)
-          // }
           // split season and episode
           if (header === "episodeNumber") {
             obj["seasonNumber"] = parseInt(cellValue.split("-")[0].trim().replace("S", ""));
@@ -121,7 +123,6 @@ const convertCsvToJson = () => {
       });
     }
 
-    let stuffToWrite;
     // if it's one element, remove the array
     if (jsonArray.length === 1) {
       stuffToWrite = jsonArray[0];
@@ -140,3 +141,11 @@ const convertCsvToJson = () => {
 };
 
 convertCsvToJson();
+
+// to-do
+// -fix tv show stuff
+// -split the yearsRan into start and end
+// -test on movies
+// -ensure it seemlessly works with the other scripts
+// -add to other repo
+// -try to integrate with webscraper Chrome extension
